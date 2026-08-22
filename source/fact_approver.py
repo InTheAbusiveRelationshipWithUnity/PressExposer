@@ -10,7 +10,11 @@ from api_fact_checker import LLMFactChecker, LLMResponse
 load_dotenv()
 
 CATBOOST_MODEL = "models/catboost_model.cbm"
-RUBERT_MODEL = "alcofighter/rubert"
+
+if os.path.exists("models/rubert"):
+    RUBERT_MODEL = "models/rubert"
+else:
+    RUBERT_MODEL = "alcofighter/rubert"
 
 API_KEY = os.getenv("API_KEY")
 
