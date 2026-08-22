@@ -7,6 +7,7 @@ from transformers import (
     AutoTokenizer
 )
 
+
 class ModelProbabilityAnalyzer:
     def __init__(self, catboost_model, rubert_model):
         self.cb_model = CatBoostClassifier()
@@ -45,7 +46,7 @@ class ModelProbabilityAnalyzer:
                 torch.softmax(output.logits, dim=1)[0][1].item()
             )
         
-        return catboost_prob * 0.5 + rubert_prob * 0.5
+        return int(round((catboost_prob * 0.5 + rubert_prob * 0.5) * 100, 1))
 
 def get_caps_ratio(text):
   text = str(text)

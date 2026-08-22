@@ -1,10 +1,7 @@
-import logging
 import trafilatura
 
 from typing import Dict, Optional
 
-
-logger = logging.getLogger(__name__)
 
 class Scraper:
     def __init__(self) -> None:
@@ -32,5 +29,5 @@ class Scraper:
                         "url" : url
                     }
         
-        except Exception as scraper_error:
-            logger.warning(f"Trafilatura failed for {url}: {scraper_error}")
+        except Exception as e:
+            print(f"Программа остановлена с ошибкой {e}")

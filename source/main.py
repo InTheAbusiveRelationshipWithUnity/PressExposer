@@ -10,8 +10,6 @@ from typing import Union, Any
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
 
-user_states: dict[int, str] = {}
-
 
 async def get_updates(session: ClientSession,
                       offset: Union[Any, None] = None)\
@@ -68,20 +66,33 @@ async def main() -> None:
                 text = message["text"]
                 user_id = message["from"]["id"]
                 
-                if user_id in user_states:
-                    if text == "/start":
-                        await send_message(session, chat_id,
-                                           "Отправьте ссылку для анализа")
-                    else:
-                        result = checker.analyse(text)
-                        
+                if text == "/start":
+                    await send_message(session, chat_id,
+                                           "Отправьте ссылку для анализа"
+                                           )
+                else:
+                    result = await asyncio.to_thread(checker.analyse, text)
+                    
+                    if result:
                         await send_message(session, chat_id, f"Вердикт: {result.verdict}")
                         await send_message(session, chat_id, f"Уверенность: {result.confidence_level}%")
                         await send_message(session, chat_id, f"{result.explanation}")
                         await send_message(session, chat_id, f"Источники {result.search_result}")
-
+                    else:
+                        await send_message(session, chat_id,
+                                           f"Не удалось получить информацию. Проверьте правильно написания ссылки"
+                                           )
+                    
                 offset = update_id + 1    
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    checker = FactChecker()
+    
+    result = checker.analyse("https://www.bbc.com/russian/articles/cx2v04jxqvlo")
+    print(result.verdict)
+    print(result.confidence_level)
+    print(result.explanation)
+    print(result.search_result)
+
+    # asyncio.run(main())
